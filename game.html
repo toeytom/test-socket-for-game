@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body onload="init()">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./simpleGame.js"></script>
+    <script>
+        function init() {
+            var socket = io();
+
+            scene = new Scene();
+            car = new Sprite(scene, "http://aharrisbooks.net/h5g/h5g_5/car.png", 40, 25);
+            car.setSpeed(0);
+
+            car.checkKeys = function () {
+                car.setSpeed(0);
+                if (keysDown[K_UP]) {
+                    car.setPosition(car.x+5, car.y)
+
+                } // end if 
+
+                if (keysDown[K_LEFT]) {
+                    car.changeAngleBy(-5);
+                } // end if 
+
+                if (keysDown[K_RIGHT]) {
+                    car.changeAngleBy(5);
+                }
+                socket.emit('game', car.x, car.y)
+                socket.on('game', function (locationx, locationy) {
+                    car.setPosition(locationx, locationy)
+                })
+                // end if 
+            } // end checkKeys 
+            scene.start();
+        }
+        function update() {
+            scene.clear();
+            car.checkKeys();
+            car.update();
+
+        }
+    </script>
+</body>
+
+</html>
