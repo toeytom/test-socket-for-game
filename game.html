@@ -13,13 +13,17 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="./simpleGame.js"></script>
     <script>
+         var socket = io();
+         
         function init() {
-            var socket = io();
+           
 
             scene = new Scene();
+            
+           
             car = new Sprite(scene, "http://aharrisbooks.net/h5g/h5g_5/car.png", 40, 25);
             car.setSpeed(0);
-
+            
             car.checkKeys = function () {
                 car.setSpeed(0);
                 if (keysDown[K_UP]) {
@@ -34,12 +38,21 @@
                 if (keysDown[K_RIGHT]) {
                     car.changeAngleBy(5);
                 }
-                socket.emit('game', car.x, car.y)
-                socket.on('game', function (locationx, locationy) {
-                    car.setPosition(locationx, locationy)
-                })
+                
+                socket.emit('play', player={
+               x: car.x ,
+               y: car.y
+           })
+           socket.on('play',function(data){ car.setPosition(data.x, data.y)
+           })
+                
                 // end if 
             } // end checkKeys 
+            
+            socket.on('newplayer', function (data) {
+                    car.setPosition(data.x, data.y)
+                })
+                
             scene.start();
         }
         function update() {
